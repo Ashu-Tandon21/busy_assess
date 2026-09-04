@@ -9,3 +9,4 @@ media/
 .venv/
 env/
 .python-tools/
+.vercel
