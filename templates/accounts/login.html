@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Sign in — Editorial Workflow{% endblock %}
+{% block extra_head %}
+<style>
+    body { display: flex; min-height: 100vh; align-items: center;
+        background: radial-gradient(circle at 20% 20%, #eeecfb 0%, var(--paper) 55%); }
+</style>
+{% endblock %}
+{% block content %}
+<div class="row justify-content-center w-100">
+    <div class="col-md-5 col-lg-4">
+        <div class="text-center mb-4">
+            <span class="brand-mark justify-content-center">
+                <span class="dot">E</span>
+                <span class="brand-word fs-3">Editorial</span>
+            </span>
+            <p class="text-muted small mt-1 mb-0">Draft, review, and publish — with a trail.</p>
+        </div>
+        <div class="surface p-4 shadow-sm">
+            {% if form.errors %}
+                <div class="alert alert-danger py-2">Enter a correct email and password.</div>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label" for="id_username">Email</label>
+                    <input type="email" name="username" autofocus class="form-control" id="id_username" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="id_password">Password</label>
+                    <input type="password" name="password" class="form-control" id="id_password" required>
+                </div>
+                <input type="hidden" name="next" value="{{ next }}">
+                <button type="submit" class="btn btn-primary w-100">Sign in</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

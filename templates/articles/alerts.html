@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Alerts — Editorial Workflow{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Overdue publish alerts</h1>
+        <p class="subtitle">Scheduled articles whose publish time has already passed.</p>
+    </div>
+</div>
+{% if overdue %}
+<div class="table-wrap">
+<table class="table styled align-middle mb-0">
+    <thead><tr><th>Article</th><th>Section</th><th>Was due</th><th>Author</th>{% if user.is_editor %}<th></th>{% endif %}</tr></thead>
+    <tbody>
+    {% for article in overdue %}
+        <tr>
+            <td><a href="{% url 'articles:detail' article.pk %}" class="text-body fw-medium">{{ article.title }}</a></td>
+            <td class="text-muted">{{ article.section.name }}</td>
+            <td><span class="status-chip" style="background:#fee2e2;color:#b91c1c;">{{ article.publish_at|date:"M j, Y H:i" }}</span></td>
+            <td class="text-muted">{{ article.author.email }}</td>
+            {% if user.is_editor %}
+            <td>
+                <form method="post" action="{% url 'articles:dismiss_alert' article.pk %}">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-outline-secondary">Dismiss</button>
+                </form>
+            </td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<div class="surface empty-state">Nothing overdue right now.</div>
+{% endif %}
+{% endblock %}

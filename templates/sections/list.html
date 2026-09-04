@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Sections — Editorial Workflow{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Sections</h1>
+        <p class="subtitle">{% if user.is_writer %}Sections you're assigned to.{% else %}Every desk in the newsroom.{% endif %}</p>
+    </div>
+    {% if user.is_editor %}
+        <a href="{% url 'sections:create' %}" class="btn btn-primary btn-sm">New section</a>
+    {% endif %}
+</div>
+
+{% if user.is_editor %}
+<div class="mb-3">
+    <div class="btn-group" role="group">
+        <a href="?" class="btn btn-sm btn-outline-secondary {% if not show_archived %}active{% endif %}">Active</a>
+        <a href="?archived=1" class="btn btn-sm btn-outline-secondary {% if show_archived %}active{% endif %}">Archived</a>
+    </div>
+</div>
+{% endif %}
+
+{% if sections %}
+<div class="table-wrap">
+<table class="table styled table-hover align-middle mb-0">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Owning editor</th>
+            <th>Writers</th>
+            <th>Articles</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for section in sections %}
+        <tr>
+            <td><a href="{% url 'sections:detail' section.pk %}" class="fw-medium text-body">{{ section.name }}</a></td>
+            <td class="text-muted">{{ section.owning_editor.email }}</td>
+            <td class="text-muted">{{ section.writers.count }}</td>
+            <td class="text-muted">{{ section.article_count }}</td>
+            <td>{% if section.is_archived %}<span class="status-chip" data-status="draft">Archived</span>{% else %}<span class="status-chip" data-status="published">Active</span>{% endif %}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<div class="surface empty-state">
+    {% if user.is_writer %}You are not assigned to any sections yet.{% else %}No sections yet.{% endif %}
+</div>
+{% endif %}
+{% endblock %}

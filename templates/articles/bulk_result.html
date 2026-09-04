@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Bulk action result — Editorial Workflow{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Bulk {{ action }} result</h1>
+        <p class="subtitle">{{ results|length }} article{{ results|length|pluralize }} selected.</p>
+    </div>
+</div>
+<div class="table-wrap mb-3">
+<table class="table styled mb-0">
+    <thead><tr><th>Article</th><th>Result</th></tr></thead>
+    <tbody>
+    {% for r in results %}
+        <tr>
+            <td><a href="{% url 'articles:detail' r.article.pk %}" class="text-body fw-medium">{{ r.article.title }}</a></td>
+            <td>
+                {% if r.ok %}
+                    <span class="status-chip" data-status="published" style="background:#dcfce7;color:#15803d;">✓ {{ r.message }}</span>
+                {% else %}
+                    <span class="status-chip" data-status="" style="background:#fee2e2;color:#b91c1c;">✕ {{ r.message }}</span>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<a href="{% url 'articles:list' %}" class="btn btn-primary btn-sm">Back to articles</a>
+{% endblock %}

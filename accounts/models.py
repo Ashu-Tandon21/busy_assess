@@ -18,5 +18,13 @@ class User(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
+    @property
+    def is_editor(self) -> bool:
+        return self.role == self.Role.EDITOR
+
+    @property
+    def is_writer(self) -> bool:
+        return self.role == self.Role.WRITER
+
     def __str__(self) -> str:
         return self.email

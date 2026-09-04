@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ section.name }} — Editorial Workflow{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="d-flex align-items-center gap-2 flex-wrap">
+            {{ section.name }}
+            {% if section.is_archived %}<span class="status-chip" data-status="draft">Archived</span>{% endif %}
+        </h1>
+        <p class="subtitle">{{ section.description }}</p>
+        <p class="text-muted small mb-0">Owning editor: {{ section.owning_editor.email }}</p>
+    </div>
+    {% if user.is_editor %}
+    <div class="page-actions">
+        <a href="{% url 'sections:edit' section.pk %}" class="btn btn-outline-primary btn-sm">Edit</a>
+        <form method="post" action="{% url 'sections:archive_toggle' section.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                {% if section.is_archived %}Restore{% else %}Archive{% endif %}
+            </button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    <div class="col-md-7">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h6 mb-0">Articles</h2>
+            <a href="{% url 'articles:create' %}?section={{ section.pk }}" class="btn btn-sm btn-primary">New article</a>
+        </div>
+        {% if articles %}
+        <div class="table-wrap">
+        <table class="table styled mb-0">
+            <tbody>
+            {% for article in articles %}
+            <tr>
+                <td><a href="{% url 'articles:detail' article.pk %}" class="text-body fw-medium">{{ article.title }}</a></td>
+                <td class="text-muted small text-end">{{ article.author.email }}</td>
+                <td class="text-end" style="width:9rem;"><span class="status-chip" data-status="{{ article.status }}">{{ article.get_status_display }}</span></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% else %}
+        <div class="surface empty-state">No articles in this section yet.</div>
+        {% endif %}
+    </div>
+    <div class="col-md-5">
+        <h2 class="h6 mb-2">Assigned writers</h2>
+        <div class="surface mb-3">
+            {% for writer in writers %}
+            <div class="d-flex justify-content-between align-items-center px-3 py-2 {% if not forloop.last %}border-bottom{% endif %}" style="border-color: var(--line);">
+                {{ writer.email }}
+                {% if user.is_editor %}
+                <form method="post" action="{% url 'sections:remove_writer' section.pk writer.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">Remove</button>
+                </form>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="empty-state py-3">No writers assigned yet.</div>
+            {% endfor %}
+        </div>
+        {% if assign_form %}
+        <form method="post" action="{% url 'sections:assign_writer' section.pk %}" class="d-flex gap-2">
+            {% csrf_token %}
+            {{ assign_form.writer }}
+            <button type="submit" class="btn btn-outline-primary text-nowrap">Assign</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

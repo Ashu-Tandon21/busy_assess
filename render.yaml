@@ -1,0 +1,22 @@
+# Render Blueprint — optional. You can also just click through the Render
+# dashboard by hand (New > Web Service, pointed at this repo) and set the
+# same env vars listed here. Either way, the database is Supabase Postgres,
+# created separately — its connection string goes in DATABASE_URL below.
+services:
+  - type: web
+    name: editorial-workflow
+    runtime: python
+    plan: free
+    buildCommand: ./build.sh
+    startCommand: gunicorn config.wsgi --log-file -
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: editorial-workflow.onrender.com
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://editorial-workflow.onrender.com
+      - key: DATABASE_URL
+        sync: false

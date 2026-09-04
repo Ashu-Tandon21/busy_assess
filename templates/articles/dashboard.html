@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Editorial Workflow{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Dashboard</h1>
+        <p class="subtitle">Where things stand across every section right now.</p>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-tile" style="--accent:#b45309;">
+            <div class="value">{{ stats.in_review }}</div>
+            <div class="label">In review</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-tile" style="--accent:#6d28d9;">
+            <div class="value">{{ stats.scheduled_this_week }}</div>
+            <div class="label">Scheduled this week</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-tile" style="--accent:#15803d;">
+            <div class="value">{{ stats.published_this_week }}</div>
+            <div class="label">Published this week</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-tile" style="--accent:#4b5563;">
+            <div class="value">{{ stats.open_drafts }}</div>
+            <div class="label">Open drafts</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="surface h-100 p-4">
+            <h2 class="h6 mb-3">By status</h2>
+            <div>
+            {% for row in stats.by_status %}
+                <div class="d-flex justify-content-between align-items-center py-2 {% if not forloop.last %}border-bottom{% endif %}" style="border-color: var(--line);">
+                    <span class="status-chip" data-status="{{ row.value }}">{{ row.label }}</span>
+                    <span class="fw-semibold">{{ row.count }}</span>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="surface h-100 p-4">
+            <h2 class="h6 mb-3">By section</h2>
+            <div>
+            {% for row in stats.by_section %}
+                <div class="d-flex justify-content-between align-items-center py-2 {% if not forloop.last %}border-bottom{% endif %}" style="border-color: var(--line);">
+                    <span>{{ row.section__name }}</span>
+                    <span class="fw-semibold">{{ row.count }}</span>
+                </div>
+            {% empty %}
+                <p class="text-muted mb-0">No articles yet.</p>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="surface p-4">
+            <h2 class="h6 mb-3">Published per week (last 8 weeks)</h2>
+            <canvas id="publishedChart" height="80"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script id="chart-data" type="application/json">
+{
+    "labels": [{% for row in stats.published_per_week %}"{{ row.week }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+    "counts": [{% for row in stats.published_per_week %}{{ row.count }}{% if not forloop.last %},{% endif %}{% endfor %}]
+}
+</script>
+<script>
+    const chartData = JSON.parse(document.getElementById('chart-data').textContent);
+    new Chart(document.getElementById('publishedChart'), {
+        type: 'bar',
+        data: {
+            labels: chartData.labels,
+            datasets: [{ label: 'Published', data: chartData.counts, backgroundColor: '#3730a3', borderRadius: 4, maxBarThickness: 40 }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#f0efeb' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+</script>
+{% endblock %}

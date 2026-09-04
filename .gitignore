@@ -1,5 +1,4 @@
 .env
-.venv/
 *.env
 __pycache__/
 *.pyc
@@ -7,6 +6,6 @@ db.sqlite3
 staticfiles/
 media/
 .DS_Store
-venv/
+.venv/
 env/
 .python-tools/
