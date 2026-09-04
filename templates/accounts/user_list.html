@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Team — Editorial Workflow{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Team</h1>
+        <p class="subtitle">Everyone with access to the newsroom.</p>
+    </div>
+    {% if user.is_editor %}
+    <a href="{% url 'accounts:user_create' %}" class="btn btn-primary btn-sm">New account</a>
+    {% endif %}
+</div>
+
+{% if users %}
+<div class="table-wrap">
+    <table class="table styled table-hover align-middle mb-0">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td class="fw-medium text-body">{{ u.email }}</td>
+                <td class="text-muted">{{ u.username }}</td>
+                <td><span class="role-chip {{ u.role }}">{{ u.role }}</span></td>
+                <td>{% if u.is_active %}<span class="status-chip" data-status="published">Active</span>{% else %}<span
+                        class="status-chip" data-status="draft">Inactive</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="surface empty-state">No accounts yet.</div>
+{% endif %}
+{% endblock %}

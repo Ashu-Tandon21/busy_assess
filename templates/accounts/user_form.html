@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}New account — Editorial Workflow{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>New account</h1>
+        <p class="subtitle">Add a writer or editor to the roster.</p>
+    </div>
+</div>
+<div class="surface p-4" style="max-width: 32rem;">
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="mb-3">
+            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<div class="text-muted small">{{ field.help_text }}</div>{% endif %}
+            {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Create account</button>
+        <a href="{% url 'accounts:user_list' %}" class="btn btn-link text-muted">Cancel</a>
+    </form>
+</div>
+{% endblock %}
